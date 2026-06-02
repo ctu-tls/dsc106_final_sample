@@ -87,7 +87,7 @@ canvas {
 }
 
 .title-slide {
-    background: linear-gradient(135deg, #1a5490 0%, #c0392b 50%, #4a9fd8 100%);
+    background: linear-gradient(135deg, #922b21 0%, #c0392b 50%, #e74c3c 100%);
     color: white;
     text-align: center;
     position: relative
@@ -268,7 +268,7 @@ canvas {
 }
 
 .country.active {
-    fill: #4a9fd8
+    fill: #e74c3c
 }
 
 .aod-point {
@@ -357,7 +357,7 @@ button {
 }
 
 button:hover {
-    background: #1a5490
+    background: #922b21
 }
 
 .legend-card {
@@ -420,8 +420,8 @@ button:hover {
 .mini-metrics div {
     padding: .8rem;
     border-radius: 10px;
-    background: #f6fbff;
-    border: 1px solid #d9e8f5;
+    background: #fdf5f2;
+    border: 1px solid #f5ddd9;
     display: flex;
     justify-content: space-between;
     gap: 1rem
@@ -522,13 +522,13 @@ button:hover {
 .takeaways-divider {
     width: 100px;
     height: 4px;
-    background: linear-gradient(90deg, #c0392b, #14b8a6);
+    background: linear-gradient(90deg, #c0392b, #e67e22);
     margin: .7rem auto;
     border-radius: 2px
 }
 
 .takeaways-main-message {
-    background: linear-gradient(135deg, #e8f4f8, #f0f8ff);
+    background: linear-gradient(135deg, #fdf0ec, #fff5f0);
     border-left: 5px solid #c0392b;
     border-radius: 12px;
     padding: 1.75rem;
@@ -574,11 +574,11 @@ button:hover {
 }
 
 .takeaways-action {
-    background: linear-gradient(135deg, #c0392b, #14b8a6);
+    background: linear-gradient(135deg, #c0392b, #e67e22);
     border-radius: 12px;
     padding: 1.5rem;
     color: white;
-    box-shadow: 0 6px 20px rgba(46, 134, 171, .3)
+    box-shadow: 0 6px 20px rgba(192, 57, 43, .3)
 }
 
 .takeaways-action h3 {
