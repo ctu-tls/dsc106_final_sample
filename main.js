@@ -132,7 +132,12 @@ function drawSlide3Chart(data) {
   svg.append("g").attr("class", "axis").attr("transform", `translate(${m.left},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((d) => `${d > 0 ? "+" : ""}${d.toFixed(2)} °C`));
   svg.append("g").attr("class", "grid").attr("transform", `translate(${m.left},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(w - m.left - m.right)).tickFormat("")).selectAll("line").attr("class", "grid-line");
 
-  svg.selectAll("rect.bar").data(data).join("rect")
+  svg.append("defs").append("clipPath").attr("id", "slide3Clip")
+    .append("rect").attr("x", m.left).attr("y", m.top)
+    .attr("width", w - m.left - m.right).attr("height", h - m.top - m.bottom);
+
+  svg.append("g").attr("clip-path", "url(#slide3Clip)")
+    .selectAll("rect.bar").data(data).join("rect")
     .attr("class", "bar")
     .attr("x", (d) => x(d.year) - barW / 2)
     .attr("width", Math.max(barW - 0.5, 1))
