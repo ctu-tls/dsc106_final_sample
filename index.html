@@ -13,17 +13,72 @@
 
     <section class="slide active title-slide">
       <h1>US Temperature Changes</h1>
-      <p class="subtitle">Subtitle goes here</p>
-      <p class="authors">Authors · Data source</p>
+      <p class="subtitle">A deeper look into temperature trends across the United States</p>
+      <p class="authors">Po-Hua Chen, Xiao Cheng, Haowen Zhang, Claire Tu ·
+      <a href="https://console.cloud.google.com/storage/browser/_details/cmip6/cmip6-zarr-consolidated-stores.csv;tab=live_object" target="_blank" rel="noopener noreferrer">
+        CMIP6 Data Source
+      </a>
+      </p>
     </section>
 
     <section class="slide">
-      <div class="slide-content centered-copy">
-        <div class="typewriter" data-text="Your intro text goes here.">
-          <h1 class="typewriter-text"></h1><span class="cursor"></span>
-        </div>
+  <div class="slide-content centered-copy">
+    <div class="compact-text">
+      <h2>What are we comparing?</h2>
+      <p>
+        Climate change is shaped by more than one factor. In this project, we compare
+        surface temperature, aerosol concentration, incoming solar radiation, and carbon dioxide
+        to explore how different atmospheric variables relate to temperature change.
+      </p>
+    </div>
+
+    <div class="chain-row">
+      <div class="chain-card">
+        <span>tas</span>
+        <b>Surface Air Temperature</b>
+        <p>
+          This measures air temperature near Earth's surface. It is our main outcome variable:
+          when tas rises, it means the surface climate is getting warmer.
+        </p>
       </div>
-    </section>
+
+      <div class="chain-card">
+        <span>od550aer</span>
+        <b>Aerosol Optical Depth</b>
+        <p>
+          This measures how much tiny airborne particles block or scatter light.
+          More aerosols can reduce incoming sunlight and create short-term cooling or disruption.
+        </p>
+      </div>
+
+      <div class="chain-card">
+        <span>rsdt</span>
+        <b>Incoming Solar Radiation</b>
+        <p>
+          This measures solar energy reaching the top of the atmosphere.
+          More incoming solar radiation can add energy to the climate system and support warming.
+        </p>
+      </div>
+
+      <div class="chain-card">
+        <span>co2</span>
+        <b>Carbon Dioxide</b>
+        <p>
+          CO₂ traps heat in the atmosphere. Unlike aerosols, its warming effect is more persistent,
+          making it an important driver of long-term temperature change.
+        </p>
+      </div>
+    </div>
+
+    <div class="compact-text">
+      <p>
+        The key question is not whether one variable explains everything. Instead, we ask:
+        how much do these factors appear to contribute to temperature change, and where does the
+        long-term warming signal remain visible?
+      </p>
+    </div>
+  </div>
+</section>
 
     <section class="slide scrollable">
       <div class="slide-content">
