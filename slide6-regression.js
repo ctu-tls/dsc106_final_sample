@@ -10,7 +10,7 @@ const slide6MapMetric = {
   label: "Average tas_c",
   units: "°C",
   colorDomain: [-5, 10, 25],
-  colorRange: ["#2563eb", "#fef08a", "#dc2626"],
+  colorRange: ["#2563eb", "#f8fafc", "#dc2626"],
   getValues(start, end) {
     return d3.rollup(
       slide6TempData.filter(
@@ -293,28 +293,32 @@ function initSlide6Map() {
       updateSlide6();
     });
 
-  svg.append("text")
-    .attr("class", "chart-label")
-    .attr("id", "slide6MapLabel")
-    .attr("x", 18)
-    .attr("y", 536)
-    .text("Average tas_c");
-
   slide6MapReady = true;
 }
 
 function getSlide6StateTransform(d, path) {
   const name = d.properties.name;
-  if (name !== "Alaska" && name !== "Hawaii") return null;
-
   const [[x0, y0], [x1, y1]] = path.bounds(d);
   const cx = (x0 + x1) / 2;
   const cy = (y0 + y1) / 2;
-  const placement = name === "Alaska"
-    ? { x: 845, y: 395, scale: 1.22 }
-    : { x: 835, y: 520, scale: 1.65 };
 
-  return `translate(${placement.x - placement.scale * cx},${placement.y - placement.scale * cy}) scale(${placement.scale})`;
+  if (name === "Alaska") {
+    const placement = { x: 140, y: 380, scale: 1.28, rotate: 0 };
+    return getSlide6PlacedTransform(cx, cy, placement);
+  }
+
+  if (name === "Hawaii") {
+    const placement = { x: 160, y: 510, scale: 1.75, rotate: 0 };
+    return getSlide6PlacedTransform(cx, cy, placement);
+  }
+
+  return "translate(115,0)";
+}
+
+function getSlide6PlacedTransform(cx, cy, placement) {
+  const tx = placement.x - placement.scale * cx;
+  const ty = placement.y - placement.scale * cy;
+  return `translate(${tx},${ty}) scale(${placement.scale}) rotate(${placement.rotate},${cx},${cy})`;
 }
 
 function updateSlide6Map(start, end, selectedState) {
@@ -348,8 +352,7 @@ function updateSlide6Map(start, end, selectedState) {
       return Number.isFinite(avg) ? color(avg) : "#e5e7eb";
     });
 
-  d3.select("#slide6MapLabel").text(`${slide6MapMetric.label}, ${start}-${end}`);
-  drawSlide6MapLegend(color);
+  drawSlide6MapLegend(color, start, end);
 
   if (slide6HoveredStatePath && slide6LastPointerEvent) {
     showSlide6StateTooltip(slide6LastPointerEvent, slide6HoveredStatePath);
@@ -371,14 +374,14 @@ function showSlide6StateTooltip(event, statePath) {
   );
 }
 
-function drawSlide6MapLegend(color) {
+function drawSlide6MapLegend(color, start, end) {
   const svg = d3.select("#slide6Map");
   svg.selectAll(".slide6-map-legend").remove();
 
   const domain = slide6MapMetric.colorDomain;
-  const width = 230;
+  const width = 240;
   const height = 10;
-  const x = 18;
+  const x = 975 - width - 28;
   const y = 560;
   const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   const gradient = defs.select("#slide6MapGradient").empty()
@@ -395,7 +398,7 @@ function drawSlide6MapLegend(color) {
     .data(d3.range(0, 1.01, 0.1))
     .join("stop")
     .attr("offset", d => `${d * 100}%`)
-    .attr("stop-color", d => color(domain[0] + d * (domain[1] - domain[0])));
+    .attr("stop-color", d => color(domain[0] + d * (domain[2] - domain[0])));
 
   const legend = svg.append("g")
     .attr("class", "slide6-map-legend")
@@ -411,7 +414,7 @@ function drawSlide6MapLegend(color) {
     .attr("class", "chart-label")
     .attr("x", 0)
     .attr("y", -8)
-    .text(`${slide6MapMetric.label}, fixed scale`);
+    .text(`${slide6MapMetric.label}, ${start}-${end} fixed scale`);
 
   legend.append("text")
     .attr("class", "chart-label")
