@@ -464,7 +464,7 @@ button:hover {
 }
 
 .map-card svg {
-    height: 500px
+    height: 360px
 }
 
 .state-map-path {
@@ -483,7 +483,12 @@ button:hover {
 }
 
 .state-map-path.no-data {
-    opacity: .38
+    cursor: default
+}
+
+.state-map-path.no-temp {
+    fill: #e5e7eb;
+    opacity: .45
 }
 
 .state-map-path.selected {

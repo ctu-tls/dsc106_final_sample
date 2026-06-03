@@ -188,9 +188,13 @@ function drawSlide6Map(start, end, selectedState) {
   const svg = d3.select("#slide6Map");
   svg.selectAll("*").remove();
 
-  const width = 820;
-  const height = 500;
-  svg.attr("viewBox", `0 0 ${width} ${height}`);
+  const width = 975;
+  const height = 610;
+  svg
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .on("click", event => event.stopPropagation())
+    .on("pointerdown", event => event.stopPropagation());
 
   if (!slide6MapFeatures.length) {
     svg.append("text")
@@ -216,8 +220,10 @@ function drawSlide6Map(start, end, selectedState) {
     .join("path")
     .attr("class", d => {
       const name = d.properties.name;
+      const avg = averages.get(name);
       return [
         "state-map-path",
+        Number.isFinite(avg) ? "has-temp" : "no-temp",
         availableStates.has(name) ? "has-data" : "no-data",
         name === selectedState ? "selected" : "",
       ].join(" ");
@@ -228,12 +234,23 @@ function drawSlide6Map(start, end, selectedState) {
       return Number.isFinite(avg) ? color(avg) : "#e5e7eb";
     })
     .on("mousemove", (event, d) => {
+      event.stopPropagation();
       const avg = averages.get(d.properties.name);
       const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No data";
-      showTooltip(event, `<strong>${d.properties.name}</strong><br>Average temperature: ${value}`);
+      const modelNote = availableStates.has(d.properties.name)
+        ? "Click to select"
+        : "No regression model for this state yet";
+      showTooltip(
+        event,
+        `<strong>${d.properties.name}</strong><br>Average temperature: ${value}<br>${modelNote}`
+      );
     })
-    .on("mouseleave", () => hideTooltip())
+    .on("mouseleave", event => {
+      event.stopPropagation();
+      hideTooltip();
+    })
     .on("click", (event, d) => {
+      event.stopPropagation();
       const name = d.properties.name;
       if (!availableStates.has(name)) return;
       document.getElementById("slide6StateSelect").value = name;

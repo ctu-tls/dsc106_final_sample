@@ -164,6 +164,17 @@
           <div class="chart-container map-card">
             <h3>Average Temperature by State</h3>
             <svg id="slide6Map"></svg>
+            <div class="year-range-controls">
+              <div class="dual-slider">
+                <div class="slider-track"><div class="slider-fill" id="slide6SliderFill"></div></div>
+                <input type="range" id="slide6StartYear" min="1960" max="2014" value="1960" step="1" />
+                <input type="range" id="slide6EndYear" min="1960" max="2014" value="2014" step="1" />
+              </div>
+              <div class="slider-labels">
+                <span id="slide6StartLabel">1960</span>
+                <span id="slide6EndLabel">2014</span>
+              </div>
+            </div>
           </div>
 
           <div class="impact-panel">
@@ -187,17 +198,6 @@
           <div class="chart-container wide-card">
             <h3>Factor Contributions Over Time</h3>
             <svg id="slide6Chart"></svg>
-            <div class="year-range-controls">
-              <div class="dual-slider">
-                <div class="slider-track"><div class="slider-fill" id="slide6SliderFill"></div></div>
-                <input type="range" id="slide6StartYear" min="1960" max="2014" value="1960" step="1" />
-                <input type="range" id="slide6EndYear" min="1960" max="2014" value="2014" step="1" />
-              </div>
-              <div class="slider-labels">
-                <span id="slide6StartLabel">1960</span>
-                <span id="slide6EndLabel">2014</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
