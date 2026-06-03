@@ -25,6 +25,18 @@ if missing:
 
 df = df[required_cols].copy()
 df = df[(df["year"] >= START_YEAR) & (df["year"] <= END_YEAR)]
+
+missing_co2 = df["co2_ppm"].isna().sum()
+df["co2_ppm"] = df["co2_ppm"].fillna(df.groupby("year")["co2_ppm"].transform("median"))
+remaining_missing_co2 = df["co2_ppm"].isna().sum()
+
+if missing_co2:
+    print(
+        "Filled",
+        missing_co2 - remaining_missing_co2,
+        "missing co2_ppm values with yearly median co2_ppm",
+    )
+
 df = df.dropna()
 
 rows = []

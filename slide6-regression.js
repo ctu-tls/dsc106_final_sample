@@ -1,4 +1,5 @@
 let slide6AnnualData = [];
+let slide6TempData = [];
 let slide6CoefData = [];
 let slide6MapFeatures = [];
 let slide6MapReady = false;
@@ -64,7 +65,25 @@ function initSlide6() {
     d3.csv("state_regression_coefficients.csv", d3.autoType),
     d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-albers-10m.json").catch(() => null),
   ]).then(([annualRows, coefRows, usMap]) => {
-    slide6AnnualData = annualRows.filter(
+    const co2ByYear = d3.rollup(
+      annualRows.filter(d => Number.isFinite(d.co2_ppm)),
+      rows => d3.median(rows, d => d.co2_ppm),
+      d => d.year
+    );
+
+    const rowsWithImputedCo2 = annualRows.map(d => ({
+      ...d,
+      co2_ppm: Number.isFinite(d.co2_ppm) ? d.co2_ppm : co2ByYear.get(d.year),
+    }));
+
+    slide6TempData = annualRows.filter(
+      d =>
+        d.year >= 1960 &&
+        d.year <= 2014 &&
+        Number.isFinite(d.tas_c)
+    );
+
+    slide6AnnualData = rowsWithImputedCo2.filter(
       d =>
         d.year >= 1960 &&
         d.year <= 2014 &&
@@ -185,7 +204,7 @@ function getSlide6StateFeatures(usMap) {
 
 function getSlide6StateAverages(start, end) {
   return d3.rollup(
-    slide6AnnualData.filter(
+    slide6TempData.filter(
       d => d.year >= start && d.year <= end && Number.isFinite(d.tas_c)
     ),
     rows => d3.mean(rows, d => d.tas_c),
@@ -215,7 +234,7 @@ function initSlide6Map() {
     return;
   }
 
-  const allTemps = slide6AnnualData
+  const allTemps = slide6TempData
     .map(d => d.tas_c)
     .filter(Number.isFinite);
   slide6MapColor = d3.scaleSequential()
