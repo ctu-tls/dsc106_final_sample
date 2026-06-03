@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   updateSlide();
   loadData();
+  if (typeof initSlide6 === "function") initSlide6();
 });
 
 function loadData() {

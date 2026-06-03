@@ -116,6 +116,53 @@
         </div>
       </div>
     </section>
+
+    <section class="slide scrollable">
+      <div class="slide-content">
+        <div class="slide-text compact-text">
+          <h2>Multiple Regression Contribution Plot</h2>
+          <p>
+            Select a U.S. state and time window (1960–2014). We fit
+            <em>Tas = β₀ + β₁·CO₂ + β₂·od550aer</em> and show how much warming is
+            attributed to CO₂ and how much cooling (or warming) is attributed to aerosols.
+          </p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="impact-panel">
+            <h3>Attribution Summary</h3>
+            <p id="slide6Equation" class="note"></p>
+            <div class="impact-grid">
+              <div><span>Observed ΔT</span><b id="slide6ObservedChange">—</b></div>
+              <div><span>Predicted warming from CO₂</span><b id="slide6Co2Warming">—</b></div>
+              <div><span>Predicted effect from aerosols</span><b id="slide6AerosolCooling">—</b></div>
+              <div><span>Combined predicted ΔT</span><b id="slide6PredictedChange">—</b></div>
+            </div>
+
+            <div class="country-nav" style="margin-top: 1rem;">
+              <label for="slide6StateSelect">State</label>
+              <select id="slide6StateSelect" aria-label="Select U.S. state"></select>
+            </div>
+          </div>
+
+          <div class="chart-container wide-card">
+            <h3>Factor Contributions Over Time</h3>
+            <svg id="slide6Chart"></svg>
+            <div class="year-range-controls">
+              <div class="dual-slider">
+                <div class="slider-track"><div class="slider-fill" id="slide6SliderFill"></div></div>
+                <input type="range" id="slide6StartYear" min="1960" max="2014" value="1960" step="1" />
+                <input type="range" id="slide6EndYear" min="1960" max="2014" value="2014" step="1" />
+              </div>
+              <div class="slider-labels">
+                <span id="slide6StartLabel">1960</span>
+                <span id="slide6EndLabel">2014</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <button class="nav-button left" id="prevSlideBtn">&lt;</button>
