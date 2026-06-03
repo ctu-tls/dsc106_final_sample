@@ -810,3 +810,54 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+.variable-list {
+  width: min(1000px, 88vw);
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.variable-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: start;
+  padding: 1.4rem 1.6rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+.variable-label span {
+  display: inline-block;
+  font-weight: 800;
+  color: #c0392b;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.4rem;
+}
+
+.variable-label h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #111827;
+}
+
+.variable-copy p {
+  margin: 0 0 0.7rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.variable-copy .impact {
+  font-weight: 700;
+  color: #7f1d1d;
+}
+
+@media (max-width: 800px) {
+  .variable-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
