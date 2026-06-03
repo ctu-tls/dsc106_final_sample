@@ -272,6 +272,7 @@ function initSlide6Map() {
     .join("path")
     .attr("class", "state-map-path")
     .attr("d", path)
+    .attr("transform", d => getSlide6StateTransform(d, path))
     .on("mousemove", (event, d) => {
       event.stopPropagation();
       slide6HoveredStatePath = event.currentTarget;
@@ -300,6 +301,20 @@ function initSlide6Map() {
     .text("Average tas_c");
 
   slide6MapReady = true;
+}
+
+function getSlide6StateTransform(d, path) {
+  const name = d.properties.name;
+  if (name !== "Alaska" && name !== "Hawaii") return null;
+
+  const [[x0, y0], [x1, y1]] = path.bounds(d);
+  const cx = (x0 + x1) / 2;
+  const cy = (y0 + y1) / 2;
+  const placement = name === "Alaska"
+    ? { x: 845, y: 395, scale: 1.22 }
+    : { x: 835, y: 520, scale: 1.65 };
+
+  return `translate(${placement.x - placement.scale * cx},${placement.y - placement.scale * cy}) scale(${placement.scale})`;
 }
 
 function updateSlide6Map(start, end, selectedState) {
@@ -361,10 +376,10 @@ function drawSlide6MapLegend(color) {
   svg.selectAll(".slide6-map-legend").remove();
 
   const domain = slide6MapMetric.colorDomain;
-  const width = 220;
+  const width = 230;
   const height = 10;
   const x = 18;
-  const y = 550;
+  const y = 560;
   const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
   const gradient = defs.select("#slide6MapGradient").empty()
     ? defs.append("linearGradient").attr("id", "slide6MapGradient")
@@ -395,20 +410,26 @@ function drawSlide6MapLegend(color) {
   legend.append("text")
     .attr("class", "chart-label")
     .attr("x", 0)
-    .attr("y", 26)
+    .attr("y", -8)
+    .text(`${slide6MapMetric.label}, fixed scale`);
+
+  legend.append("text")
+    .attr("class", "chart-label")
+    .attr("x", 0)
+    .attr("y", 27)
     .text(slide6MapMetric.format(domain[0]));
 
   legend.append("text")
     .attr("class", "chart-label")
     .attr("x", width / 2)
-    .attr("y", 26)
+    .attr("y", 27)
     .attr("text-anchor", "middle")
     .text(slide6MapMetric.format(domain[1]));
 
   legend.append("text")
     .attr("class", "chart-label")
     .attr("x", width)
-    .attr("y", 26)
+    .attr("y", 27)
     .attr("text-anchor", "end")
     .text(slide6MapMetric.format(domain[2]));
 }
