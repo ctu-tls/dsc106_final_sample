@@ -203,5 +203,5 @@ function box(svg, w = 620, h = 340) { svg.attr("viewBox", `0 0 ${w} ${h}`); retu
 function label(svg, text, x, y, anchor = "start") { svg.append("text").attr("class", "chart-label").attr("x", x).attr("y", y).attr("text-anchor", anchor).text(text); }
 function legend(svg, items, x, y) { const g = svg.append("g").attr("class", "legend").attr("transform", `translate(${x},${y})`); items.forEach((s, i) => { const e = g.append("g").attr("transform", `translate(${i * 150},0)`); e.append("circle").attr("r", 5).attr("fill", s.color); e.append("text").attr("x", 12).attr("y", 4).text(s.label); }); }
 function corr(a, b) { const ma = d3.mean(a), mb = d3.mean(b); const num = d3.sum(a, (v, i) => (v - ma) * (b[i] - mb)); const den = Math.sqrt(d3.sum(a, (v) => (v - ma) ** 2) * d3.sum(b, (v) => (v - mb) ** 2)); return den ? num / den : 0; }
-function showTooltip(event, html, container) { d3.select(container || "#tooltip").classed("hidden", false).style("left", `${event.offsetX + 14}px`).style("top", `${event.offsetY + 14}px`).html(html); }
+function showTooltip(event, html, container) { d3.select(container || "#tooltip").classed("hidden", false).style("left", `${event.pageX + 14}px`).style("top", `${event.pageY + 14}px`).html(html); }
 function hideTooltip(container) { d3.select(container || "#tooltip").classed("hidden", true); }

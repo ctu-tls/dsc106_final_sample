@@ -1,6 +1,8 @@
 let slide6AnnualData = [];
 let slide6CoefData = [];
 let slide6MapFeatures = [];
+let slide6MapReady = false;
+let slide6MapColor = null;
 
 const slide6StateFips = {
   "01": "Alabama",
@@ -85,9 +87,16 @@ function initSlide6() {
     stateSelect.value = states.includes("California") ? "California" : states[0];
 
     document.getElementById("slide6StateSelect").addEventListener("change", updateSlide6);
-    document.getElementById("slide6StartYear").addEventListener("input", updateSlide6);
-    document.getElementById("slide6EndYear").addEventListener("input", updateSlide6);
+    document.getElementById("slide6StartYear").addEventListener("input", () => {
+      hideTooltip();
+      updateSlide6();
+    });
+    document.getElementById("slide6EndYear").addEventListener("input", () => {
+      hideTooltip();
+      updateSlide6();
+    });
 
+    initSlide6Map();
     updateSlide6();
   });
 }
@@ -114,7 +123,7 @@ function updateSlide6() {
     .filter(d => d.state === state && d.year >= start && d.year <= end)
     .sort((a, b) => a.year - b.year);
 
-  drawSlide6Map(start, end, state);
+  updateSlide6Map(start, end, state);
 
   if (!coef || stateRows.length < 2) {
     d3.select("#slide6Chart").selectAll("*").remove();
@@ -184,7 +193,7 @@ function getSlide6StateAverages(start, end) {
   );
 }
 
-function drawSlide6Map(start, end, selectedState) {
+function initSlide6Map() {
   const svg = d3.select("#slide6Map");
   svg.selectAll("*").remove();
 
@@ -206,38 +215,28 @@ function drawSlide6Map(start, end, selectedState) {
     return;
   }
 
-  const averages = getSlide6StateAverages(start, end);
-  const values = [...averages.values()].filter(Number.isFinite);
-  const color = d3.scaleSequential()
-    .domain(d3.extent(values))
-    .interpolator(d3.interpolateYlOrRd);
+  const allTemps = slide6AnnualData
+    .map(d => d.tas_c)
+    .filter(Number.isFinite);
+  slide6MapColor = d3.scaleSequential()
+    .domain(d3.extent(allTemps))
+    .interpolator(d3.interpolateRgbBasis(["#fee8a8", "#f97316", "#b91c1c"]));
+
   const path = d3.geoPath();
-  const availableStates = new Set(slide6CoefData.map(d => d.state));
 
   svg.append("g")
+    .attr("class", "state-map-layer")
     .selectAll("path")
     .data(slide6MapFeatures)
     .join("path")
-    .attr("class", d => {
-      const name = d.properties.name;
-      const avg = averages.get(name);
-      return [
-        "state-map-path",
-        Number.isFinite(avg) ? "has-temp" : "no-temp",
-        availableStates.has(name) ? "has-data" : "no-data",
-        name === selectedState ? "selected" : "",
-      ].join(" ");
-    })
+    .attr("class", "state-map-path")
     .attr("d", path)
-    .attr("fill", d => {
-      const avg = averages.get(d.properties.name);
-      return Number.isFinite(avg) ? color(avg) : "#e5e7eb";
-    })
     .on("mousemove", (event, d) => {
       event.stopPropagation();
-      const avg = averages.get(d.properties.name);
-      const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No data";
-      const modelNote = availableStates.has(d.properties.name)
+      const avg = d3.select(event.currentTarget).datum().properties.slide6AverageTemp;
+      const hasModel = d3.select(event.currentTarget).classed("has-data");
+      const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No temperature data";
+      const modelNote = hasModel
         ? "Click to select"
         : "No regression model for this state yet";
       showTooltip(
@@ -252,16 +251,52 @@ function drawSlide6Map(start, end, selectedState) {
     .on("click", (event, d) => {
       event.stopPropagation();
       const name = d.properties.name;
-      if (!availableStates.has(name)) return;
+      if (!d3.select(event.currentTarget).classed("has-data")) return;
       document.getElementById("slide6StateSelect").value = name;
       updateSlide6();
     });
 
   svg.append("text")
     .attr("class", "chart-label")
+    .attr("id", "slide6MapLabel")
     .attr("x", 18)
     .attr("y", height - 16)
-    .text(`Average tas_c, ${start}-${end}`);
+    .text("Average tas_c");
+
+  slide6MapReady = true;
+}
+
+function updateSlide6Map(start, end, selectedState) {
+  if (!slide6MapReady) {
+    initSlide6Map();
+  }
+
+  if (!slide6MapFeatures.length || !slide6MapColor) return;
+
+  const averages = getSlide6StateAverages(start, end);
+  const availableStates = new Set(slide6CoefData.map(d => d.state));
+
+  d3.select("#slide6Map")
+    .selectAll(".state-map-path")
+    .each(d => {
+      d.properties.slide6AverageTemp = averages.get(d.properties.name);
+    })
+    .attr("class", d => {
+      const name = d.properties.name;
+      const avg = averages.get(name);
+      return [
+        "state-map-path",
+        Number.isFinite(avg) ? "has-temp" : "no-temp",
+        availableStates.has(name) ? "has-data" : "no-data",
+        name === selectedState ? "selected" : "",
+      ].join(" ");
+    })
+    .attr("fill", d => {
+      const avg = averages.get(d.properties.name);
+      return Number.isFinite(avg) ? slide6MapColor(avg) : "#e5e7eb";
+    });
+
+  d3.select("#slide6MapLabel").text(`Average tas_c, ${start}-${end}`);
 }
 
 function fmtSlide6Temp(v) {
