@@ -406,8 +406,15 @@ button:hover {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 330px 1fr;
+    grid-template-columns: 1fr;
     gap: 1rem
+}
+
+.slide6-map-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 1rem;
+    align-items: stretch
 }
 
 .impact-grid {
@@ -454,6 +461,34 @@ button:hover {
 
 .wide-card svg {
     height: 430px
+}
+
+.map-card svg {
+    height: 500px
+}
+
+.state-map-path {
+    stroke: #fff;
+    stroke-width: .8;
+    transition: fill .15s ease, opacity .15s ease, stroke .15s ease
+}
+
+.state-map-path.has-data {
+    cursor: pointer
+}
+
+.state-map-path.has-data:hover {
+    stroke: #111827;
+    stroke-width: 1.4
+}
+
+.state-map-path.no-data {
+    opacity: .38
+}
+
+.state-map-path.selected {
+    stroke: #111827;
+    stroke-width: 2.2
 }
 
 .ranking-card svg {
@@ -737,6 +772,7 @@ button:hover {
 
     .globe-grid,
     .dashboard-grid,
+    .slide6-map-grid,
     .chart-grid,
     .chain-row {
         grid-template-columns: 1fr

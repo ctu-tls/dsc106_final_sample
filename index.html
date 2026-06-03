@@ -6,6 +6,7 @@
   <title>Temperature Changes in the United States</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 </head>
 <body>
   <div class="slides-container">
@@ -154,55 +155,17 @@
         <div class="slide-text compact-text">
           <h2>What Explains Temperature Change?</h2>
           <p>
-            Select a U.S. state and time window from 1960 to 2014. This view estimates how
-            changes in CO₂, aerosols, and incoming solar radiation are associated with changes
-            in surface temperature.
-          </p>
-          <p class="note">
-            We use a regression model to estimate each factor’s contribution. These values show
-            modeled associations, not direct causal proof.
+            Select a U.S. state and time window from 1960 to 2014 to compare observed
+            temperature change with model-estimated contributions.
           </p>
         </div>
 
-        <div class="variable-explainer">
-        <div class="variable-explainer-card">
-          <span>tas</span>
-          <strong>Surface Air Temperature</strong>
-          <p>
-            This is the temperature outcome we are trying to explain. Observed ΔT shows how
-            much surface temperature changed during the selected time window.
-          </p>
-        </div>
+        <div class="slide6-map-grid">
+          <div class="chart-container map-card">
+            <h3>Average Temperature by State</h3>
+            <svg id="slide6Map"></svg>
+          </div>
 
-        <div class="variable-explainer-card">
-          <span>CO₂</span>
-          <strong>Carbon Dioxide</strong>
-          <p>
-            CO₂ traps heat in the atmosphere. In the model, a positive CO₂ contribution means
-            rising CO₂ is associated with warming.
-          </p>
-        </div>
-
-        <div class="variable-explainer-card">
-          <span>od550aer</span>
-          <strong>Aerosols</strong>
-          <p>
-            Aerosols are tiny particles that can scatter or block sunlight. Their contribution
-            may appear as cooling or warming depending on the selected state and period.
-          </p>
-        </div>
-
-        <div class="variable-explainer-card">
-          <span>rsdt</span>
-          <strong>Incoming Solar Radiation</strong>
-          <p>
-            rsdt measures solar energy reaching the top of the atmosphere. It helps represent
-            how incoming energy relates to temperature change.
-          </p>
-        </div>
-      </div>
-
-        <div class="dashboard-grid">
           <div class="impact-panel">
             <h3>Attribution Summary</h3>
             <p id="slide6Equation" class="note"></p>
@@ -218,7 +181,9 @@
               <select id="slide6StateSelect" aria-label="Select U.S. state"></select>
             </div>
           </div>
+        </div>
 
+        <div class="dashboard-grid">
           <div class="chart-container wide-card">
             <h3>Factor Contributions Over Time</h3>
             <svg id="slide6Chart"></svg>
@@ -246,5 +211,6 @@
   <script src="main.js"></script>
   <script src="slide6-regression.js"></script>
   <script src="canvas.js"></script>
+  <div id="tooltip" class="tooltip hidden"></div>
 </body>
 </html>
