@@ -470,7 +470,7 @@ button:hover {
 .state-map-path {
     stroke: #fff;
     stroke-width: .8;
-    transition: fill .15s ease, opacity .15s ease, stroke .15s ease
+    transition: opacity .15s ease, stroke .15s ease
 }
 
 .state-map-path.has-data {

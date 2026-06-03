@@ -4,6 +4,8 @@ let slide6CoefData = [];
 let slide6MapFeatures = [];
 let slide6MapReady = false;
 let slide6MapColor = null;
+let slide6HoveredStatePath = null;
+let slide6LastPointerEvent = null;
 
 const slide6StateFips = {
   "01": "Alabama",
@@ -106,14 +108,8 @@ function initSlide6() {
     stateSelect.value = states.includes("California") ? "California" : states[0];
 
     document.getElementById("slide6StateSelect").addEventListener("change", updateSlide6);
-    document.getElementById("slide6StartYear").addEventListener("input", () => {
-      hideTooltip();
-      updateSlide6();
-    });
-    document.getElementById("slide6EndYear").addEventListener("input", () => {
-      hideTooltip();
-      updateSlide6();
-    });
+    document.getElementById("slide6StartYear").addEventListener("input", updateSlide6);
+    document.getElementById("slide6EndYear").addEventListener("input", updateSlide6);
 
     initSlide6Map();
     updateSlide6();
@@ -267,19 +263,14 @@ function initSlide6Map() {
     .attr("d", path)
     .on("mousemove", (event, d) => {
       event.stopPropagation();
-      const avg = d3.select(event.currentTarget).datum().properties.slide6AverageTemp;
-      const hasModel = d3.select(event.currentTarget).classed("has-data");
-      const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No temperature data";
-      const modelNote = hasModel
-        ? "Click to select"
-        : "No regression model for this state yet";
-      showTooltip(
-        event,
-        `<strong>${d.properties.name}</strong><br>Average temperature: ${value}<br>${modelNote}`
-      );
+      slide6HoveredStatePath = event.currentTarget;
+      slide6LastPointerEvent = event;
+      showSlide6StateTooltip(event, event.currentTarget);
     })
     .on("mouseleave", event => {
       event.stopPropagation();
+      slide6HoveredStatePath = null;
+      slide6LastPointerEvent = null;
       hideTooltip();
     })
     .on("click", (event, d) => {
@@ -331,6 +322,25 @@ function updateSlide6Map(start, end, selectedState) {
     });
 
   d3.select("#slide6MapLabel").text(`Average tas_c, ${start}-${end}`);
+
+  if (slide6HoveredStatePath && slide6LastPointerEvent) {
+    showSlide6StateTooltip(slide6LastPointerEvent, slide6HoveredStatePath);
+  }
+}
+
+function showSlide6StateTooltip(event, statePath) {
+  const state = d3.select(statePath);
+  const d = state.datum();
+  const avg = d.properties.slide6AverageTemp;
+  const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No temperature data";
+  const modelNote = state.classed("has-data")
+    ? "Click to select"
+    : "No regression model for this state yet";
+
+  showTooltip(
+    event,
+    `<strong>${d.properties.name}</strong><br>Average temperature: ${value}<br>${modelNote}`
+  );
 }
 
 function fmtSlide6Temp(v) {
