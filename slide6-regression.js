@@ -138,10 +138,12 @@ function updateSlide6() {
   fill.style.right = `${100 - pct(end)}%`;
 
   const coef = slide6CoefData.find(d => d.state === state);
+  const selectedAverageTemp = getSlide6AverageTemp(state, start, end);
   const stateRows = slide6AnnualData
     .filter(d => d.state === state && d.year >= start && d.year <= end)
     .sort((a, b) => a.year - b.year);
 
+  document.getElementById("slide6AverageTemp").textContent = fmtSlide6AvgTemp(selectedAverageTemp);
   updateSlide6Map(start, end, state);
 
   if (!coef || stateRows.length < 2) {
@@ -209,6 +211,19 @@ function getSlide6StateAverages(start, end) {
     ),
     rows => d3.mean(rows, d => d.tas_c),
     d => d.state
+  );
+}
+
+function getSlide6AverageTemp(state, start, end) {
+  return d3.mean(
+    slide6TempData.filter(
+      d =>
+        d.state === state &&
+        d.year >= start &&
+        d.year <= end &&
+        Number.isFinite(d.tas_c)
+    ),
+    d => d.tas_c
   );
 }
 
@@ -321,6 +336,10 @@ function updateSlide6Map(start, end, selectedState) {
 function fmtSlide6Temp(v) {
   const sign = v > 0 ? "+" : "";
   return `${sign}${v.toFixed(2)} °C`;
+}
+
+function fmtSlide6AvgTemp(v) {
+  return Number.isFinite(v) ? `${v.toFixed(1)} °C` : "—";
 }
 
 function drawSlide6Chart(data) {
