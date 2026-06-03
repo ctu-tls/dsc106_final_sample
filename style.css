@@ -762,3 +762,51 @@ button:hover {
         right: 10px
     }
 }
+
+.variable-explainer {
+  width: min(1100px, 92vw);
+  margin: 1rem auto 1.4rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+}
+
+.variable-explainer-card {
+  background: #fff;
+  border: 1px solid #f0d6d0;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  text-align: left;
+}
+
+.variable-explainer-card span {
+  color: #c0392b;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.variable-explainer-card strong {
+  display: block;
+  color: #1f2937;
+  font-size: 1rem;
+  margin: 0.25rem 0;
+}
+
+.variable-explainer-card p {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+@media (max-width: 1000px) {
+  .variable-explainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .variable-explainer {
+    grid-template-columns: 1fr;
+  }
+}
