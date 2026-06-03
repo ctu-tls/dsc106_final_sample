@@ -3,9 +3,26 @@ let slide6TempData = [];
 let slide6CoefData = [];
 let slide6MapFeatures = [];
 let slide6MapReady = false;
-let slide6MapColor = null;
 let slide6HoveredStatePath = null;
 let slide6LastPointerEvent = null;
+
+const slide6MapMetric = {
+  label: "Average tas_c",
+  units: "°C",
+  colorRange: ["#fee8a8", "#f97316", "#b91c1c"],
+  getValues(start, end) {
+    return d3.rollup(
+      slide6TempData.filter(
+        d => d.year >= start && d.year <= end && Number.isFinite(d.tas_c)
+      ),
+      rows => d3.mean(rows, d => d.tas_c),
+      d => d.state
+    );
+  },
+  format(value) {
+    return Number.isFinite(value) ? `${value.toFixed(1)} °C` : "—";
+  },
+};
 
 const slide6StateFips = {
   "01": "Alabama",
@@ -201,13 +218,7 @@ function getSlide6StateFeatures(usMap) {
 }
 
 function getSlide6StateAverages(start, end) {
-  return d3.rollup(
-    slide6TempData.filter(
-      d => d.year >= start && d.year <= end && Number.isFinite(d.tas_c)
-    ),
-    rows => d3.mean(rows, d => d.tas_c),
-    d => d.state
-  );
+  return slide6MapMetric.getValues(start, end);
 }
 
 function getSlide6AverageTemp(state, start, end) {
@@ -244,13 +255,6 @@ function initSlide6Map() {
       .text("Map could not be loaded.");
     return;
   }
-
-  const allTemps = slide6TempData
-    .map(d => d.tas_c)
-    .filter(Number.isFinite);
-  slide6MapColor = d3.scaleSequential()
-    .domain(d3.extent(allTemps))
-    .interpolator(d3.interpolateRgbBasis(["#fee8a8", "#f97316", "#b91c1c"]));
 
   const path = d3.geoPath();
 
@@ -296,9 +300,14 @@ function updateSlide6Map(start, end, selectedState) {
     initSlide6Map();
   }
 
-  if (!slide6MapFeatures.length || !slide6MapColor) return;
+  if (!slide6MapFeatures.length) return;
 
   const averages = getSlide6StateAverages(start, end);
+  const values = [...averages.values()].filter(Number.isFinite);
+  const colorDomain = getSlide6ColorDomain(values);
+  const color = d3.scaleSequential()
+    .domain(colorDomain)
+    .interpolator(d3.interpolateRgbBasis(slide6MapMetric.colorRange));
   const availableStates = new Set(slide6CoefData.map(d => d.state));
 
   d3.select("#slide6Map")
@@ -318,21 +327,29 @@ function updateSlide6Map(start, end, selectedState) {
     })
     .attr("fill", d => {
       const avg = averages.get(d.properties.name);
-      return Number.isFinite(avg) ? slide6MapColor(avg) : "#e5e7eb";
+      return Number.isFinite(avg) ? color(avg) : "#e5e7eb";
     });
 
-  d3.select("#slide6MapLabel").text(`Average tas_c, ${start}-${end}`);
+  d3.select("#slide6MapLabel").text(`${slide6MapMetric.label}, ${start}-${end}`);
+  drawSlide6MapLegend(color, colorDomain);
 
   if (slide6HoveredStatePath && slide6LastPointerEvent) {
     showSlide6StateTooltip(slide6LastPointerEvent, slide6HoveredStatePath);
   }
 }
 
+function getSlide6ColorDomain(values) {
+  const domain = d3.extent(values);
+  if (!domain.every(Number.isFinite)) return [0, 1];
+  if (domain[0] === domain[1]) return [domain[0] - 0.5, domain[1] + 0.5];
+  return domain;
+}
+
 function showSlide6StateTooltip(event, statePath) {
   const state = d3.select(statePath);
   const d = state.datum();
   const avg = d.properties.slide6AverageTemp;
-  const value = Number.isFinite(avg) ? `${avg.toFixed(1)} °C` : "No temperature data";
+  const value = Number.isFinite(avg) ? slide6MapMetric.format(avg) : "No temperature data";
   const modelNote = state.classed("has-data")
     ? "Click to select"
     : "No regression model for this state yet";
@@ -343,13 +360,64 @@ function showSlide6StateTooltip(event, statePath) {
   );
 }
 
+function drawSlide6MapLegend(color, domain) {
+  const svg = d3.select("#slide6Map");
+  svg.selectAll(".slide6-map-legend").remove();
+
+  if (!domain.every(Number.isFinite)) return;
+
+  const width = 170;
+  const height = 10;
+  const x = 18;
+  const y = 562;
+  const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
+  const gradient = defs.select("#slide6MapGradient").empty()
+    ? defs.append("linearGradient").attr("id", "slide6MapGradient")
+    : defs.select("#slide6MapGradient");
+
+  gradient
+    .attr("x1", "0%")
+    .attr("x2", "100%")
+    .attr("y1", "0%")
+    .attr("y2", "0%");
+
+  gradient.selectAll("stop")
+    .data(d3.range(0, 1.01, 0.1))
+    .join("stop")
+    .attr("offset", d => `${d * 100}%`)
+    .attr("stop-color", d => color(domain[0] + d * (domain[1] - domain[0])));
+
+  const legend = svg.append("g")
+    .attr("class", "slide6-map-legend")
+    .attr("transform", `translate(${x},${y})`);
+
+  legend.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("rx", 5)
+    .attr("fill", "url(#slide6MapGradient)");
+
+  legend.append("text")
+    .attr("class", "chart-label")
+    .attr("x", 0)
+    .attr("y", 25)
+    .text(slide6MapMetric.format(domain[0]));
+
+  legend.append("text")
+    .attr("class", "chart-label")
+    .attr("x", width)
+    .attr("y", 25)
+    .attr("text-anchor", "end")
+    .text(slide6MapMetric.format(domain[1]));
+}
+
 function fmtSlide6Temp(v) {
   const sign = v > 0 ? "+" : "";
   return `${sign}${v.toFixed(2)} °C`;
 }
 
 function fmtSlide6AvgTemp(v) {
-  return Number.isFinite(v) ? `${v.toFixed(1)} °C` : "—";
+  return slide6MapMetric.format(v);
 }
 
 function drawSlide6Chart(data) {
