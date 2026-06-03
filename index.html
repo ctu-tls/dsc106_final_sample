@@ -21,6 +21,32 @@
       </p>
     </section>
 
+    
+
+    <section class="slide scrollable">
+      <div class="slide-content">
+        <div class="slide-text compact-text">
+          <h2>How Has Temperature Changed?</h2>
+          <p>Annual global surface temperature anomaly relative to the 1850–1900 baseline. Red bars are warmer-than-average years; blue are cooler.</p>
+        </div>
+        <div class="chart-container wide-card">
+          <h3>Temperature Anomaly <span id="slide3YearRange">1850–2014</span></h3>
+          <svg id="slide3Chart"></svg>
+          <div class="year-range-controls">
+            <div class="dual-slider">
+              <div class="slider-track"><div class="slider-fill" id="sliderFill"></div></div>
+              <input type="range" id="startYearSlider" min="1850" max="2014" value="1850" step="1" />
+              <input type="range" id="endYearSlider" min="1850" max="2014" value="2014" step="1" />
+            </div>
+            <div class="slider-labels">
+              <span id="startYearLabel">1850</span>
+              <span id="endYearLabel">2014</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="slide scrollable">
       <div class="slide-content">
         <div class="slide-text compact-text">
@@ -106,30 +132,6 @@
             factors appear to contribute to temperature change, and where the long-term warming signal
             remains visible.
           </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide scrollable">
-      <div class="slide-content">
-        <div class="slide-text compact-text">
-          <h2>How Has Temperature Changed?</h2>
-          <p>Annual global surface temperature anomaly relative to the 1850–1900 baseline. Red bars are warmer-than-average years; blue are cooler.</p>
-        </div>
-        <div class="chart-container wide-card">
-          <h3>Temperature Anomaly <span id="slide3YearRange">1850–2014</span></h3>
-          <svg id="slide3Chart"></svg>
-          <div class="year-range-controls">
-            <div class="dual-slider">
-              <div class="slider-track"><div class="slider-fill" id="sliderFill"></div></div>
-              <input type="range" id="startYearSlider" min="1850" max="2014" value="1850" step="1" />
-              <input type="range" id="endYearSlider" min="1850" max="2014" value="2014" step="1" />
-            </div>
-            <div class="slider-labels">
-              <span id="startYearLabel">1850</span>
-              <span id="endYearLabel">2014</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
